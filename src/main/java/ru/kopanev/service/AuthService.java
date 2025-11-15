@@ -9,7 +9,11 @@ import java.util.Map;
 public class AuthService {
 
     private final Map<String, User> users = new HashMap<>();
-    private final AuditService auditService = new AuditService();
+    private final AuditService auditService;
+
+    public AuthService(AuditService auditService) {
+        this.auditService = auditService;
+    }
 
     public boolean register(String username, String password) {
         if (users.containsKey(username)) {

@@ -9,45 +9,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class ProductRepository {
+public interface ProductRepository {
 
-    private final Map<Long, Product> products = new HashMap<>();
+    void save(Product product);
 
-    public void save(Product product) {
-        products.put(product.getId(), product);
-    }
+    void replace(Long id, Product product);
 
-    public void replace(Long id, Product product) {
-        products.replace(id, product);
-    }
+    Optional<Product> findById(Long id);
 
-    public Optional<Product> findById(Long id) {
-        return Optional.ofNullable(products.get(id));
-    }
+    void remove(Long id);
 
-    public void remove(Long id) {
-        products.remove(id);
-    }
+    List<Product> findAll();
 
-    public List<Product> findAll() {
-        return new ArrayList<>(products.values());
-    }
+    List<Product> findByCategory(String category);
 
-    public List<Product> findByCategory(String category) {
-        return products.values().stream()
-                .filter(product -> product.getCategory().equalsIgnoreCase(category))
-                .toList();
-    }
+    List<Product> findByBrand(String brand);
 
-    public List<Product> findByBrand(String brand) {
-        return products.values().stream()
-                .filter(product -> product.getBrand().equalsIgnoreCase(brand))
-                .toList();
-    }
-
-    public List<Product> findByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
-        return products.values().stream()
-                .filter(product -> product.getPrice().doubleValue() >= minPrice.doubleValue() && product.getPrice().doubleValue() <= maxPrice.doubleValue())
-                .toList();
-    }
+    List<Product> findByPriceRange(BigDecimal minPrice, BigDecimal maxPrice);
 }
