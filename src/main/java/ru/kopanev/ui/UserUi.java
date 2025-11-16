@@ -36,7 +36,7 @@ public class UserUi {
         String password = scanner.nextLine().trim();
 
         if (authService.login(username, password)) {
-            session.setCurrentUser(username);
+            session.login(username);
             System.out.println("Вход выполнен");
         } else {
             System.out.println("Неверное имя пользователя или пароль");
@@ -45,7 +45,7 @@ public class UserUi {
 
     public void logout() {
         System.out.println("Пользователь " + session.getCurrentUser() + " вышел");
-        auditService.log(session.getCurrentUser(), Action.LOGOUT, "Пользователь вышел");
+        auditService.logAction(session.getCurrentUser(), Action.LOGOUT, "Пользователь вышел");
         session.logout();
     }
 }

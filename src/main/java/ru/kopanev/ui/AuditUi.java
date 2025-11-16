@@ -10,17 +10,27 @@ import java.util.List;
 public class AuditUi {
     private final AuditService auditService;
 
-    public void viewAudit() {
-        List<Event> events = auditService.getEvents();
+    public void printAllEvents() {
+        List<Event> events = auditService.getAllEvents();
 
         if (events.isEmpty()) {
-            System.out.println("Журнал аудита пуст.");
+            System.out.println("Нет событий аудита.");
             return;
         }
 
-        System.out.println("\n=== ЖУРНАЛ АУДИТА ===");
-        for (Event event : events) {
-            System.out.println(event);
+        System.out.println("\n=== ИСТОРИЯ ДЕЙСТВИЙ ===");
+        events.forEach(System.out::println);
+    }
+
+    public void printUserEvents(String username) {
+        List<Event> events = auditService.getEventsByUsername(username);
+
+        if (events.isEmpty()) {
+            System.out.println("Нет событий для пользователя: " + username);
+            return;
         }
+
+        System.out.println("\n=== ИСТОРИЯ ДЕЙСТВИЙ: " + username + " ===");
+        events.forEach(System.out::println);
     }
 }

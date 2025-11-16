@@ -2,17 +2,23 @@ package ru.kopanev.utils;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
-@Setter
 public class UserSession {
     private String currentUser;
+    private boolean isAuthenticated;
 
-    public void logout() {
-        this.currentUser = null;
+    public void login(String username) {
+        this.currentUser = username;
+        this.isAuthenticated = true;
+        log.info("Session started for user: {}", username);
     }
 
-    public boolean isLoggedIn() {
-        return currentUser != null;
+    public void logout() {
+        log.info("Session ended for user: {}", currentUser);
+        this.currentUser = null;
+        this.isAuthenticated = false;
     }
 }

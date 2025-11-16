@@ -13,11 +13,11 @@ public interface ProductRepository {
 
     void save(Product product);
 
-    void replace(Long id, Product product);
+    void update(Product product);
+
+    void delete(Long id);
 
     Optional<Product> findById(Long id);
-
-    void remove(Long id);
 
     List<Product> findAll();
 

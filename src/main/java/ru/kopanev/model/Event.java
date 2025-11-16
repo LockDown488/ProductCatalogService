@@ -1,15 +1,24 @@
 package ru.kopanev.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.kopanev.enums.Action;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
 
-    private final String username;
-    private final Action action;
-    private final String details;
-    private final LocalDateTime timestamp;
+    private Long id;
+    private String username;
+    private Action action;
+    private String details;
+    private LocalDateTime timestamp;
 
     public Event(String username, Action action, String details) {
         this.username = username;

@@ -56,7 +56,7 @@ public class ProductUi {
             String description = scanner.nextLine().trim();
 
             Product updatedProduct = new Product(name, category, brand, BigDecimal.valueOf(price), description);
-            productService.updateProduct(session.getCurrentUser(), id, updatedProduct);
+            productService.updateProduct(session.getCurrentUser(), updatedProduct);
             System.out.println("Товар обновлен");
         } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
@@ -73,7 +73,7 @@ public class ProductUi {
         }
 
         try {
-            productService.removeProduct(session.getCurrentUser(), id);
+            productService.deleteProduct(session.getCurrentUser(), id);
             System.out.println("Товар удален");
         } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());

@@ -11,9 +11,9 @@ public interface ProductService {
 
     void addProduct(String username, Product product);
 
-    void updateProduct(String username, Long id, Product updatedProduct);
+    void updateProduct(String username, Product product);
 
-    void removeProduct(String username, Long id);
+    void deleteProduct(String username, Long id);
 
     List<Product> getAllProducts();
 
