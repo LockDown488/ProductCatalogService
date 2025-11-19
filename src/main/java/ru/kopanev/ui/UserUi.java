@@ -8,14 +8,27 @@ import ru.kopanev.utils.UserSession;
 
 import java.util.Scanner;
 
+/**
+ * UI-компонент для работы с аутентификацией пользователей.
+ * Предоставляет методы для регистрации, входа и выхода пользователей
+ * через консольный интерфейс.
+ *
+ * <p>Все операции автоматически логируются в систему аудита.</p>
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
 @RequiredArgsConstructor
 public class UserUi {
     private final Scanner scanner;
     private final UserSession session;
-
     private final AuthService authService;
     private final AuditService auditService;
 
+    /**
+     * Регистрирует нового пользователя в системе.
+     * Запрашивает имя пользователя и пароль, затем создаёт учётную запись.
+     */
     public void register() {
         System.out.print("Введите имя пользователя: ");
         String username = scanner.nextLine().trim();
@@ -29,6 +42,11 @@ public class UserUi {
         }
     }
 
+    /**
+     * Выполняет вход пользователя в систему.
+     * Запрашивает имя пользователя и пароль, затем аутентифицирует пользователя.
+     * При успешном входе создаёт сессию пользователя.
+     */
     public void login() {
         System.out.print("Введите имя пользователя: ");
         String username = scanner.nextLine().trim();
@@ -43,6 +61,10 @@ public class UserUi {
         }
     }
 
+    /**
+     * Выполняет выход текущего пользователя из системы.
+     * Логирует действие в аудит и завершает сессию пользователя.
+     */
     public void logout() {
         System.out.println("Пользователь " + session.getCurrentUser() + " вышел");
         auditService.logAction(session.getCurrentUser(), Action.LOGOUT, "Пользователь вышел");

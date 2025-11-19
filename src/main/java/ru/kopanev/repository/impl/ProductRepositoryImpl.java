@@ -1,8 +1,10 @@
-package ru.kopanev.repository;
+package ru.kopanev.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.kopanev.model.Product;
 import ru.kopanev.factory.DataSourceFactory;
+import ru.kopanev.repository.ProductRepository;
+import ru.kopanev.utils.SqlQueries;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -18,9 +20,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public void save(Product product) {
-        String sql = "INSERT INTO marketplace.products (name, category, brand, price, description) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.SAVE_PRODUCT, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, product.getName());
             stmt.setString(2, product.getCategory());
@@ -43,9 +44,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public void update(Product product) {
-        String sql = "UPDATE marketplace.products SET name=?, category=?, brand=?, price=?, description=? WHERE id=?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.UPDATE_PRODUCT)) {
 
             stmt.setString(1, product.getName());
             stmt.setString(2, product.getCategory());
@@ -64,9 +64,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public void delete(Long id) {
-        String sql = "DELETE FROM marketplace.products WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.DELETE_PRODUCT)) {
 
             stmt.setLong(1, id);
             int rows = stmt.executeUpdate();
@@ -79,9 +78,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public Optional<Product> findById(Long id) {
-        String sql = "SELECT id, name, category, brand, price, description FROM marketplace.products WHERE id=?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_PRODUCT_BY_ID)) {
 
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -96,10 +94,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public List<Product> findAll() {
-        String sql = "SELECT id, name, category, brand, price, description FROM marketplace.products ORDER BY id";
         List<Product> result = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_ALL_PRODUCTS);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) result.add(mapRowToProduct(rs));
@@ -110,10 +107,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public List<Product> findByCategory(String category) {
-        String sql = "SELECT id, name, category, brand, price, description FROM marketplace.products WHERE category = ? ORDER BY name";
         List<Product> result = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_PRODUCT_BY_CATEGORY)) {
 
             stmt.setString(1, category);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -129,10 +125,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public List<Product> findByBrand(String brand) {
-        String sql = "SELECT id, name, category, brand, price, description FROM marketplace.products WHERE brand = ? ORDER BY name";
         List<Product> result = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_PRODUCT_BY_BRAND)) {
 
             stmt.setString(1, brand);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -148,10 +143,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public List<Product> findByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
-        String sql = "SELECT id, name, category, brand, price, description FROM marketplace.products WHERE price BETWEEN ? AND ? ORDER BY price";
         List<Product> result = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_PRODUCT_BY_PRICE_RANGE)) {
 
             stmt.setBigDecimal(1, minPrice);
             stmt.setBigDecimal(2, maxPrice);

@@ -8,6 +8,13 @@ import ru.kopanev.enums.Action;
 
 import java.time.LocalDateTime;
 
+/**
+ * Представляет событие аудита в системе.
+ * Записывает информацию о действиях пользователей для отслеживания активности.
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
 @Getter
 @Setter
 @NoArgsConstructor

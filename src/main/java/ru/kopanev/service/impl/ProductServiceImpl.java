@@ -1,10 +1,12 @@
-package ru.kopanev.service;
+package ru.kopanev.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.kopanev.enums.Action;
 import ru.kopanev.exception.EntityNotFoundException;
 import ru.kopanev.model.Product;
 import ru.kopanev.repository.ProductRepository;
+import ru.kopanev.service.AuditService;
+import ru.kopanev.service.ProductService;
 import ru.kopanev.utils.ProductCache;
 
 import java.math.BigDecimal;

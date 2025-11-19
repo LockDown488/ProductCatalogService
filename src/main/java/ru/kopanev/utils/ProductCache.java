@@ -8,16 +8,35 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Кэш для хранения товаров в памяти.
+ * Использует ConcurrentHashMap для потокобезопасного доступа.
+ *
+ * <p>При достижении максимального размера автоматически вытесняет
+ * старые элементы (простая FIFO стратегия). Для production рекомендуется
+ * использовать LRU (Least Recently Used) стратегию.</p>
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
 @Slf4j
 public class ProductCache {
 
     private final Map<Long, Product> cache;
     private final int maxSize;
 
+    /**
+     * Создаёт кэш с размером по умолчанию (100 элементов).
+     */
     public ProductCache() {
         this(100);
     }
 
+    /**
+     * Создаёт кэш с указанным максимальным размером.
+     *
+     * @param maxSize максимальное количество элементов в кэше
+     */
     public ProductCache(int maxSize) {
         this.cache = new ConcurrentHashMap<>();
         this.maxSize = maxSize;
@@ -25,7 +44,10 @@ public class ProductCache {
     }
 
     /**
-     * Получает товар из кэша.
+     * Получает товар из кэша по идентификатору.
+     *
+     * @param id идентификатор товара
+     * @return Optional с товаром, если найден в кэше, иначе пустой Optional
      */
     public Optional<Product> get(Long id) {
         Product product = cache.get(id);
@@ -39,6 +61,9 @@ public class ProductCache {
 
     /**
      * Добавляет товар в кэш.
+     * Если кэш заполнен, вытесняет самый старый элемент.
+     *
+     * @param product товар для добавления в кэш
      */
     public void put(Product product) {
         if (cache.size() >= maxSize) {
@@ -50,6 +75,8 @@ public class ProductCache {
 
     /**
      * Обновляет товар в кэше.
+     *
+     * @param product товар с обновлёнными данными
      */
     public void update(Product product) {
         cache.put(product.getId(), product);
@@ -57,7 +84,9 @@ public class ProductCache {
     }
 
     /**
-     * Удаляет товар из кэша.
+     * Удаляет товар из кэша (инвалидация).
+     *
+     * @param id идентификатор товара для удаления
      */
     public void invalidate(Long id) {
         cache.remove(id);
@@ -73,22 +102,30 @@ public class ProductCache {
     }
 
     /**
-     * Проверяет, есть ли товар в кэше.
+     * Проверяет наличие товара в кэше.
+     *
+     * @param id идентификатор товара
+     * @return true, если товар находится в кэше
      */
     public boolean contains(Long id) {
         return cache.containsKey(id);
     }
 
     /**
-     * Возвращает размер кэша.
+     * Возвращает текущий размер кэша.
+     *
+     * @return количество элементов в кэше
      */
     public int size() {
         return cache.size();
     }
 
     /**
-     * Вытесняет самый старый элемент (простая стратегия).
-     * В production лучше использовать LRU (Least Recently Used).
+     * Вытесняет самый старый элемент из кэша (FIFO стратегия).
+     *
+     * <p>Примечание: В production рекомендуется использовать
+     * LRU (Least Recently Used) стратегию для более эффективного
+     * управления памятью.</p>
      */
     private void evictOldest() {
         if (!cache.isEmpty()) {

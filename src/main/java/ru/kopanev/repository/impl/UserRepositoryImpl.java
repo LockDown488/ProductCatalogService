@@ -1,8 +1,10 @@
-package ru.kopanev.repository;
+package ru.kopanev.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.kopanev.model.User;
 import ru.kopanev.factory.DataSourceFactory;
+import ru.kopanev.repository.UserRepository;
+import ru.kopanev.utils.SqlQueries;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -20,9 +22,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void save(User user) {
-        String sql = "INSERT INTO marketplace.users (username, password, is_active) VALUES (?, ?, ?)";
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.SAVE_USER,Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getPassword());
@@ -43,9 +44,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void update(User user) {
-        String sql = "UPDATE marketplace.users SET password=?, is_active=? WHERE username=?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.UPDATE_USER)) {
 
             stmt.setString(1, user.getPassword());
             stmt.setBoolean(2, user.isActive());
@@ -62,9 +62,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
-        String sql = "SELECT id, username, password, is_active FROM marketplace.users WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_USER_BY_ID)) {
 
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -79,9 +78,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        String sql = "SELECT id, username, password, is_active FROM marketplace.users WHERE username = ?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_USER_BY_USERNAME)) {
 
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -95,10 +93,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findAll() {
-        String sql = "SELECT id, username, password, is_active FROM marketplace.users";
         List<User> users = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_ALL_USERS);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) users.add(mapRowToUser(rs));

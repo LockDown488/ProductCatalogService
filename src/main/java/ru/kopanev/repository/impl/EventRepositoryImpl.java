@@ -1,9 +1,11 @@
-package ru.kopanev.repository;
+package ru.kopanev.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.kopanev.enums.Action;
 import ru.kopanev.model.Event;
 import ru.kopanev.factory.DataSourceFactory;
+import ru.kopanev.repository.EventRepository;
+import ru.kopanev.utils.SqlQueries;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -21,9 +23,8 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public void save(Event event) {
-        String sql = "INSERT INTO marketplace.audit_events (username, action, details, timestamp) VALUES (?, ?, ?, ?)";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.SAVE_EVENT, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, event.getUsername());
             stmt.setString(2, event.getAction().name());
@@ -45,9 +46,8 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public Optional<Event> findById(Long id) {
-        String sql = "SELECT id, username, action, details, timestamp FROM marketplace.audit_events WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_EVENT_BY_ID, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, id);
 
@@ -65,10 +65,9 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public List<Event> findAll() {
-        String sql = "SELECT id, username, action, details, timestamp FROM marketplace.audit_events ORDER BY timestamp DESC";
         List<Event> events = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_ALL_EVENTS);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) events.add(mapRowToEvent(rs));
@@ -80,10 +79,9 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public List<Event> findByUsername(String username) {
-        String sql = "SELECT id, username, action, details, timestamp FROM marketplace.audit_events WHERE username=? ORDER BY timestamp DESC";
         List<Event> events = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SqlQueries.FIND_EVENTS_BY_USERNAME)) {
 
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {

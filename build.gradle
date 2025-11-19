@@ -22,6 +22,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:${slf4j}")
     implementation("ch.qos.logback:logback-classic:${logback}")
+    implementation("org.mindrot:jbcrypt:${jbcrypt}")
 
     implementation("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")

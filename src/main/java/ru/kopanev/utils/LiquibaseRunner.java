@@ -17,6 +17,20 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Управляет выполнением миграций базы данных через Liquibase.
+ * Обеспечивает создание схем БД и применение changelog файлов.
+ *
+ * <p>Основные возможности:</p>
+ * <ul>
+ *   <li>Создание необходимых схем (marketplace, liquibase_service)</li>
+ *   <li>Выполнение миграций из changelog файлов</li>
+ *   <li>Откат последнего changeset при необходимости</li>
+ * </ul>
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class LiquibaseRunner {
@@ -24,6 +38,18 @@ public class LiquibaseRunner {
     private final DbConfig config;
     private final DataSource dataSource;
 
+    /**
+     * Выполняет миграции базы данных.
+     *
+     * <p>Последовательность действий:</p>
+     * <ol>
+     *   <li>Создаёт необходимые схемы (marketplace, liquibase_service)</li>
+     *   <li>Настраивает Liquibase с указанными схемами</li>
+     *   <li>Применяет все неприменённые changeset из changelog</li>
+     * </ol>
+     *
+     * @throws RuntimeException если произошла ошибка при выполнении миграций
+     */
     public void runMigrations() {
         log.info("Start Liquibase migrations...");
 
@@ -50,6 +76,13 @@ public class LiquibaseRunner {
         }
     }
 
+    /**
+     * Откатывает последний выполненный changeset.
+     * Используется для отмены последней миграции в случае ошибки
+     * или необходимости возврата к предыдущему состоянию БД.
+     *
+     * @throws RuntimeException если произошла ошибка при откате
+     */
     public void rollbackLastChange() {
         log.warn("Rolling back last Liquibase changeset...");
 
@@ -76,6 +109,14 @@ public class LiquibaseRunner {
         }
     }
 
+    /**
+     * Создаёт необходимые схемы БД, если они ещё не существуют.
+     * Создаются схемы: marketplace (для данных приложения) и
+     * liquibase_service (для служебных таблиц Liquibase).
+     *
+     * @param connection активное соединение с базой данных
+     * @throws SQLException если произошла ошибка при создании схем
+     */
     private void createSchemasIfNotExist(Connection connection) throws SQLException {
         log.info("Creating schemas if not exist...");
 

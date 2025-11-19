@@ -13,6 +13,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Главное меню приложения маркетплейса.
+ * Управляет взаимодействием с пользователем через консольный интерфейс,
+ * используя паттерн Command для обработки действий.
+ *
+ * <p>Отображает два типа меню:</p>
+ * <ul>
+ *   <li>Гостевое меню (регистрация, вход, выход)</li>
+ *   <li>Пользовательское меню (управление товарами, аудит, выход)</li>
+ * </ul>
+ *
+ * <p>Меню автоматически переключается в зависимости от состояния аутентификации
+ * пользователя в {@link UserSession}.</p>
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
 @Slf4j
 public class MenuUi {
     private final Scanner scanner = new Scanner(System.in);
@@ -21,6 +38,15 @@ public class MenuUi {
     private final Map<String, Command> guestCommands = new HashMap<>();
     private final Map<String, Command> userCommands = new HashMap<>();
 
+    /**
+     * Создаёт главное меню с инициализацией всех команд.
+     * Настраивает карты команд для гостевого и пользовательского меню.
+     *
+     * @param authService сервис аутентификации
+     * @param productService сервис управления товарами
+     * @param auditService сервис аудита
+     * @param session сессия пользователя
+     */
     public MenuUi(AuthService authService, ProductService productService, AuditService auditService, UserSession session) {
         this.session = session;
 
@@ -45,6 +71,11 @@ public class MenuUi {
         userCommands.put("0", new LogoutCommand(userUi));
     }
 
+    /**
+     * Запускает главный цикл приложения.
+     * Отображает соответствующее меню в зависимости от состояния аутентификации
+     * и обрабатывает команды пользователя до завершения программы.
+     */
     @SuppressWarnings("InfiniteLoopStatement")
     public void start() {
         System.out.println("\n=== ДОБРО ПОЖАЛОВАТЬ В МАРКЕТПЛЕЙС ===\n");
@@ -58,6 +89,10 @@ public class MenuUi {
         }
     }
 
+    /**
+     * Отображает меню для неавторизованных пользователей.
+     * Предоставляет опции регистрации, входа и выхода из приложения.
+     */
     private void showGuestMenu() {
         System.out.print("""
                 
@@ -72,6 +107,11 @@ public class MenuUi {
         executeCommand(command);
     }
 
+    /**
+     * Отображает меню для авторизованных пользователей.
+     * Предоставляет полный набор функций для управления товарами,
+     * просмотра аудита и выхода из системы.
+     */
     public void showUserMenu() {
         String username = session.getCurrentUser();
         System.out.println("\n=== ПОЛЬЗОВАТЕЛЬСКОЕ МЕНЮ (" + username + ") ===");
@@ -95,6 +135,12 @@ public class MenuUi {
         executeCommand(command);
     }
 
+    /**
+     * Выполняет выбранную команду.
+     * Если команда не найдена, выводит сообщение об ошибке.
+     *
+     * @param command команда для выполнения (может быть null)
+     */
     private void executeCommand(Command command) {
         if (command != null) {
             command.execute();

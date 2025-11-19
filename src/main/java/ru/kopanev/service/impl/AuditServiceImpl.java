@@ -1,11 +1,11 @@
-package ru.kopanev.service;
+package ru.kopanev.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.kopanev.enums.Action;
 import ru.kopanev.model.Event;
 import ru.kopanev.repository.EventRepository;
-import ru.kopanev.utils.UserSession;
+import ru.kopanev.service.AuditService;
 
 import java.time.LocalDateTime;
 import java.util.List;

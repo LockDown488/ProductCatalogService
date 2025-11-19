@@ -8,6 +8,13 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Представляет товар в системе маркетплейса.
+ * Содержит информацию о названии, категории, бренде, цене и описании товара.
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
 @Getter
 @Setter
 @NoArgsConstructor

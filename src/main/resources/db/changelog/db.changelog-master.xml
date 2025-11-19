@@ -8,5 +8,6 @@
     <include file="db/changelog/changesets/001-create-schemas.xml"/>
     <include file="db/changelog/changesets/002-create-tables.xml"/>
     <include file="db/changelog/changesets/003-insert-data.xml"/>
-
+    <include file="db/changelog/changesets/004-insert-test-users-with-hashed-passwords.xml"/>
+    <include file="db/changelog/changesets/005-add-table-remarks.xml"/>
 </databaseChangeLog>

@@ -1,4 +1,4 @@
-package ru.kopanev.service;
+package ru.kopanev.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,9 @@ import ru.kopanev.enums.Action;
 import ru.kopanev.exception.EntityNotFoundException;
 import ru.kopanev.model.User;
 import ru.kopanev.repository.UserRepository;
+import ru.kopanev.service.AuditService;
+import ru.kopanev.service.AuthService;
+import ru.kopanev.utils.PasswordEncoder;
 import ru.kopanev.utils.UserSession;
 
 @Slf4j
@@ -24,9 +27,11 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
 
+        String hashedPassword = PasswordEncoder.hashPassword(password);
+
         User user = User.builder()
                 .username(username)
-                .password(password)
+                .password(hashedPassword)
                 .build();
 
         userRepository.save(user);
@@ -42,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        if (!user.getPassword().equals(password)) {
+        if (!PasswordEncoder.checkPassword(password, user.getPassword())) {
             log.warn("Login failed: incorrect password - {}", username);
             return false;
         }
