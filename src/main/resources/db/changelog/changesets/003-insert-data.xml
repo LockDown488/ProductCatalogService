@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Предзаполнение товаров -->
+    <changeSet id="003-insert-sample-products" author="artem">
+        <insert schemaName="marketplace" tableName="products">
+            <column name="name" value="iPhone 15 Pro"/>
+            <column name="category" value="Электроника"/>
+            <column name="brand" value="Apple"/>
+            <column name="price" value="89990.00"/>
+            <column name="description" value="Новейший флагман от Apple с титановым корпусом"/>
+        </insert>
+        <insert schemaName="marketplace" tableName="products">
+            <column name="name" value="Samsung Galaxy S24"/>
+            <column name="category" value="Электроника"/>
+            <column name="brand" value="Samsung"/>
+            <column name="price" value="79990.00"/>
+            <column name="description" value="Мощный флагман с AI-функциями"/>
+        </insert>
+        <insert schemaName="marketplace" tableName="products">
+            <column name="name" value="MacBook Pro M3"/>
+            <column name="category" value="Компьютеры"/>
+            <column name="brand" value="Apple"/>
+            <column name="price" value="199990.00"/>
+            <column name="description" value="Профессиональный ноутбук на процессоре M3"/>
+        </insert>
+
+        <rollback>
+            <delete schemaName="marketplace" tableName="products">
+                <where>name IN ('iPhone 15 Pro', 'Samsung Galaxy S24', 'MacBook Pro M3')</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <!-- Предзаполнение пользователей -->
+    <changeSet id="003-insert-sample-users" author="artem">
+        <insert schemaName="marketplace" tableName="users">
+            <column name="username" value="admin"/>
+            <column name="password" value="admin123"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert schemaName="marketplace" tableName="users">
+            <column name="username" value="user"/>
+            <column name="password" value="user123"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <rollback>
+            <delete schemaName="marketplace" tableName="users">
+                <where>username IN ('admin', 'user')</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>

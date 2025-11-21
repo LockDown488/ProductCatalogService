@@ -14,10 +14,24 @@ repositories {
 }
 
 dependencies {
+    implementation("org.postgresql:postgresql:${postgresDriverVersion}")
+
+    implementation("org.liquibase:liquibase-core:${liquibaseVersion}")
+
+    implementation("com.zaxxer:HikariCP:${hikariVersion}")
+
+    implementation("org.slf4j:slf4j-api:${slf4j}")
+    implementation("ch.qos.logback:logback-classic:${logback}")
+    implementation("org.mindrot:jbcrypt:${jbcrypt}")
+
     implementation("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
+    testImplementation("org.testcontainers:testcontainers:${testcontainersVersion}")
+    testImplementation("org.testcontainers:postgresql:${testcontainersVersion}")
+    testImplementation("org.testcontainers:junit-jupiter:${testcontainersVersion}")
 }
 
 test {

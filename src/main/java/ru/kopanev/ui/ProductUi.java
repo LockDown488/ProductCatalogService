@@ -10,13 +10,27 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * UI-компонент для работы с товарами через консольный интерфейс.
+ * Предоставляет методы для добавления, обновления, удаления, просмотра
+ * и фильтрации товаров в каталоге.
+ *
+ * <p>Все операции выполняются от имени текущего авторизованного пользователя
+ * и автоматически логируются в систему аудита.</p>
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
 @RequiredArgsConstructor
 public class ProductUi {
     private final Scanner scanner;
     private final UserSession session;
-
     private final ProductService productService;
 
+    /**
+     * Добавляет новый товар в каталог.
+     * Запрашивает у пользователя все необходимые данные и сохраняет товар.
+     */
     public void addProduct() {
         System.out.print("Введите название товара: ");
         String name = scanner.nextLine().trim();
@@ -34,6 +48,10 @@ public class ProductUi {
         System.out.println("Товар добавлен с ID: " + product.getId());
     }
 
+    /**
+     * Обновляет существующий товар в каталоге.
+     * Запрашивает ID товара и новые данные для обновления.
+     */
     public void updateProduct() {
         System.out.print("Введите ID товара для изменения: ");
         long id = Long.parseLong(scanner.nextLine().trim());
@@ -56,13 +74,16 @@ public class ProductUi {
             String description = scanner.nextLine().trim();
 
             Product updatedProduct = new Product(name, category, brand, BigDecimal.valueOf(price), description);
-            productService.updateProduct(session.getCurrentUser(), id, updatedProduct);
+            productService.updateProduct(session.getCurrentUser(), updatedProduct);
             System.out.println("Товар обновлен");
         } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
 
+    /**
+     * Удаляет товар из каталога по ID.
+     */
     public void deleteProduct() {
         System.out.print("Введите ID товара для удаления: ");
         long id = Long.parseLong(scanner.nextLine().trim());
@@ -73,13 +94,16 @@ public class ProductUi {
         }
 
         try {
-            productService.removeProduct(session.getCurrentUser(), id);
+            productService.deleteProduct(session.getCurrentUser(), id);
             System.out.println("Товар удален");
         } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
 
+    /**
+     * Выводит список всех товаров в каталоге.
+     */
     public void listProducts() {
         List<Product> products = productService.getAllProducts();
 
@@ -94,6 +118,9 @@ public class ProductUi {
         }
     }
 
+    /**
+     * Фильтрует и выводит товары по категории.
+     */
     public void filterByCategory() {
         System.out.println("Введите категорию: ");
         String category = scanner.nextLine().trim();
@@ -110,6 +137,9 @@ public class ProductUi {
         }
     }
 
+    /**
+     * Фильтрует и выводит товары по бренду.
+     */
     public void filterByBrand() {
         System.out.println("Введите бренд: ");
         String brand = scanner.nextLine().trim();
@@ -126,6 +156,9 @@ public class ProductUi {
         }
     }
 
+    /**
+     * Фильтрует и выводит товары в заданном ценовом диапазоне.
+     */
     public void filterByPriceRange() {
         System.out.println("Введите минимальную цену товаров: ");
         BigDecimal minPrice = BigDecimal.valueOf(Double.parseDouble(scanner.nextLine().trim()));
@@ -139,6 +172,9 @@ public class ProductUi {
         }
     }
 
+    /**
+     * Находит и выводит товар по ID.
+     */
     public void getProductById() {
         System.out.print("Введите ID товара: ");
         long id = Long.parseLong(scanner.nextLine().trim());
@@ -152,18 +188,30 @@ public class ProductUi {
         }
     }
 
+    /**
+     * Возвращает список всех ID товаров в каталоге.
+     * @return список идентификаторов товаров
+     */
     private List<Long> getProductsIds() {
         return productService.getAllProducts().stream()
                 .map(Product::getId)
                 .toList();
     }
 
+    /**
+     * Возвращает список всех категорий товаров в каталоге.
+     * @return список категорий
+     */
     private List<String> getProductsCategories() {
         return productService.getAllProducts().stream()
                 .map(Product::getCategory)
                 .toList();
     }
 
+    /**
+     * Возвращает список всех брендов товаров в каталоге.
+     * @return список брендов
+     */
     private List<String> getProductsBrands() {
         return productService.getAllProducts().stream()
                 .map(Product::getBrand)

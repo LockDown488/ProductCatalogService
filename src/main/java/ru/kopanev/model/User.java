@@ -1,16 +1,29 @@
 package ru.kopanev.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
+/**
+ * Представляет пользователя системы.
+ * Содержит учётные данные и статус активности пользователя.
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
 @Getter
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class User {
 
-    private final String username;
-    private final String password;
-    private final boolean isActive = false;
+    private Long id;
+    private String username;
+    private String password;
+    private boolean isActive;
 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.isActive = false;
+    }
 }

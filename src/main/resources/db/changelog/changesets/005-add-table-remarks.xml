@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="005-add-table-remarks" author="artem">
+        <comment>Добавление описаний к таблицам и колонкам</comment>
+
+        <!-- Описания для таблицы users -->
+        <sql>
+            COMMENT ON TABLE marketplace.users IS 'Пользователи системы маркетплейса';
+            COMMENT ON COLUMN marketplace.users.id IS 'Уникальный идентификатор пользователя';
+            COMMENT ON COLUMN marketplace.users.username IS 'Имя пользователя (логин)';
+            COMMENT ON COLUMN marketplace.users.password IS 'Хешированный пароль';
+            COMMENT ON COLUMN marketplace.users.is_active IS 'Статус активности пользователя (вошел/вышел)';
+        </sql>
+
+        <!-- Описания для таблицы products -->
+        <sql>
+            COMMENT ON TABLE marketplace.products IS 'Товары маркетплейса';
+            COMMENT ON COLUMN marketplace.products.id IS 'Уникальный идентификатор товара';
+            COMMENT ON COLUMN marketplace.products.name IS 'Название товара';
+            COMMENT ON COLUMN marketplace.products.category IS 'Категория товара (например, Электроника, Обувь)';
+            COMMENT ON COLUMN marketplace.products.brand IS 'Бренд производителя';
+            COMMENT ON COLUMN marketplace.products.price IS 'Цена товара в рублях';
+            COMMENT ON COLUMN marketplace.products.description IS 'Подробное описание товара';
+        </sql>
+
+        <!-- Описания для таблицы audit_events -->
+        <sql>
+            COMMENT ON TABLE marketplace.audit_events IS 'История действий пользователей (аудит)';
+            COMMENT ON COLUMN marketplace.audit_events.id IS 'Уникальный идентификатор события';
+            COMMENT ON COLUMN marketplace.audit_events.username IS 'Имя пользователя, выполнившего действие';
+            COMMENT ON COLUMN marketplace.audit_events.action IS 'Тип действия (LOGIN, LOGOUT, ADD_PRODUCT и т.д.)';
+            COMMENT ON COLUMN marketplace.audit_events.details IS 'Дополнительная информация о действии';
+            COMMENT ON COLUMN marketplace.audit_events.timestamp IS 'Дата и время выполнения действия';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

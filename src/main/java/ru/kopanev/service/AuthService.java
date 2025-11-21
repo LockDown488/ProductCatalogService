@@ -1,46 +1,46 @@
 package ru.kopanev.service;
 
-import ru.kopanev.enums.Action;
-import ru.kopanev.model.User;
+/**
+ * Сервис для управления аутентификацией и авторизацией пользователей.
+ * Обеспечивает регистрацию, вход и выход пользователей из системы.
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
+public interface AuthService {
 
-import java.util.HashMap;
-import java.util.Map;
+    /**
+     * Регистрирует нового пользователя в системе.
+     * Проверяет уникальность имени пользователя.
+     *
+     * @param username имя пользователя (не должно быть null или пустым)
+     * @param password пароль пользователя (не должен быть null или пустым)
+     * @return true, если регистрация успешна; false, если пользователь уже существует
+     * @throws IllegalArgumentException если username или password пусты
+     */
+    boolean register(String username, String password);
 
-public class AuthService {
+    /**
+     * Выполняет вход пользователя в систему.
+     * Проверяет корректность имени пользователя и пароля.
+     *
+     * @param username имя пользователя
+     * @param password пароль пользователя
+     * @return true, если вход выполнен успешно; false, если данные неверны
+     * @throws IllegalArgumentException если username или password пусты
+     */
+    boolean login(String username, String password);
 
-    private final Map<String, User> users = new HashMap<>();
-    private final AuditService auditService;
+    /**
+     * Выполняет выход текущего пользователя из системы.
+     * Обновляет статус пользователя на неактивный.
+     */
+    void logout();
 
-    public AuthService(AuditService auditService) {
-        this.auditService = auditService;
-    }
-
-    public boolean register(String username, String password) {
-        if (users.containsKey(username)) {
-            return false;
-        }
-
-        User user = User.builder()
-                .username(username)
-                .password(password)
-                .build();
-
-        users.put(username, user);
-        auditService.log(username, Action.REGISTER, "Пользователь " + username + " зарегистрирован!");
-
-        return true;
-    }
-
-    public boolean login(String username, String password) {
-        if (!users.containsKey(username)) {
-            return false;
-        }
-
-        if (users.get(username).getPassword().equals(password)) {
-            auditService.log(username, Action.LOGIN, "Пользователь " + username + " авторизован!");
-            return true;
-        }
-
-        return false;
-    }
+    /**
+     * Проверяет, авторизован ли пользователь в данный момент.
+     *
+     * @return true, если пользователь авторизован; false в противном случае
+     */
+    boolean isLoggedIn();
 }

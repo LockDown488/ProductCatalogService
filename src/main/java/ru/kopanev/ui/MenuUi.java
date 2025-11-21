@@ -1,27 +1,55 @@
 package ru.kopanev.ui;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.kopanev.command.Command;
 import ru.kopanev.command.guestCommands.ExitCommand;
 import ru.kopanev.command.guestCommands.LoginCommand;
 import ru.kopanev.command.guestCommands.RegisterCommand;
 import ru.kopanev.command.userCommands.*;
-import ru.kopanev.service.AuditService;
-import ru.kopanev.service.AuthService;
-import ru.kopanev.service.ProductService;
+import ru.kopanev.service.*;
 import ru.kopanev.utils.UserSession;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Главное меню приложения маркетплейса.
+ * Управляет взаимодействием с пользователем через консольный интерфейс,
+ * используя паттерн Command для обработки действий.
+ *
+ * <p>Отображает два типа меню:</p>
+ * <ul>
+ *   <li>Гостевое меню (регистрация, вход, выход)</li>
+ *   <li>Пользовательское меню (управление товарами, аудит, выход)</li>
+ * </ul>
+ *
+ * <p>Меню автоматически переключается в зависимости от состояния аутентификации
+ * пользователя в {@link UserSession}.</p>
+ *
+ * @author Artem Kopanev
+ * @since 1.0
+ */
+@Slf4j
 public class MenuUi {
     private final Scanner scanner = new Scanner(System.in);
-    private final UserSession session = new UserSession();
+    private final UserSession session;
 
     private final Map<String, Command> guestCommands = new HashMap<>();
     private final Map<String, Command> userCommands = new HashMap<>();
 
-    public MenuUi(AuthService authService, ProductService productService, AuditService auditService) {
+    /**
+     * Создаёт главное меню с инициализацией всех команд.
+     * Настраивает карты команд для гостевого и пользовательского меню.
+     *
+     * @param authService сервис аутентификации
+     * @param productService сервис управления товарами
+     * @param auditService сервис аудита
+     * @param session сессия пользователя
+     */
+    public MenuUi(AuthService authService, ProductService productService, AuditService auditService, UserSession session) {
+        this.session = session;
+
         ProductUi productUi = new ProductUi(scanner, session, productService);
         UserUi userUi = new UserUi(scanner, session, authService, auditService);
         AuditUi auditUi = new AuditUi(auditService);
@@ -38,14 +66,22 @@ public class MenuUi {
         userCommands.put("6", new FilterByBrandCommand(productUi));
         userCommands.put("7", new FilterByPriceRangeCommand(productUi));
         userCommands.put("8", new GetProductCommand(productUi));
-        userCommands.put("9", new ViewAuditCommand(auditUi));
+        userCommands.put("9", new ViewAllEventsCommand(auditUi));
+        userCommands.put("10", new ViewUserEventsCommand(auditUi, session.getCurrentUser()));
         userCommands.put("0", new LogoutCommand(userUi));
     }
 
+    /**
+     * Запускает главный цикл приложения.
+     * Отображает соответствующее меню в зависимости от состояния аутентификации
+     * и обрабатывает команды пользователя до завершения программы.
+     */
     @SuppressWarnings("InfiniteLoopStatement")
     public void start() {
+        System.out.println("\n=== ДОБРО ПОЖАЛОВАТЬ В МАРКЕТПЛЕЙС ===\n");
+
         while (true) {
-            if (!session.isLoggedIn()) {
+            if (!session.isAuthenticated()) {
                 showGuestMenu();
             } else {
                 showUserMenu();
@@ -53,6 +89,10 @@ public class MenuUi {
         }
     }
 
+    /**
+     * Отображает меню для неавторизованных пользователей.
+     * Предоставляет опции регистрации, входа и выхода из приложения.
+     */
     private void showGuestMenu() {
         System.out.print("""
                 
@@ -67,10 +107,16 @@ public class MenuUi {
         executeCommand(command);
     }
 
-    private void showUserMenu() {
+    /**
+     * Отображает меню для авторизованных пользователей.
+     * Предоставляет полный набор функций для управления товарами,
+     * просмотра аудита и выхода из системы.
+     */
+    public void showUserMenu() {
+        String username = session.getCurrentUser();
+        System.out.println("\n=== ПОЛЬЗОВАТЕЛЬСКОЕ МЕНЮ (" + username + ") ===");
         System.out.print("""
         
-        === ПОЛЬЗОВАТЕЛЬСКОЕ МЕНЮ ===
         1. Добавить товар
         2. Изменить товар
         3. Удалить товар
@@ -79,7 +125,8 @@ public class MenuUi {
         6. Найти товары по бренду
         7. Найти товары в ценовом диапазоне
         8. Получить товар по ID
-        9. Просмотреть аудит
+        9. Просмотреть весь аудит
+        10. Просмотреть аудит пользователя
         0. Выйти
         Выберите действие:\s""");
 
@@ -88,6 +135,12 @@ public class MenuUi {
         executeCommand(command);
     }
 
+    /**
+     * Выполняет выбранную команду.
+     * Если команда не найдена, выводит сообщение об ошибке.
+     *
+     * @param command команда для выполнения (может быть null)
+     */
     private void executeCommand(Command command) {
         if (command != null) {
             command.execute();
